@@ -1,2 +1,2 @@
-# orga
-Organización de Computadores 1-2018
+# Organización de Computadores
+Códigos de laboratorio
