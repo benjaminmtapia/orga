@@ -1,6 +1,13 @@
 #include "funciones.h"
 
 void procesar(dato* arregloinstrucciones, int lineas, int valores[32],char senal[10],FILE*salida, FILE*salida2){
+	/* 
+	//===================================================================
+ENTRADAS: arreglo con las instrucciones almacenadas en estructuras, cantidad de lineas de instruccion, señales de control, y archivos de salida
+SALIDAS: como función no retorna nada, pero entrega ambos archivos de salida escritos con el procedimiento pedido
+PROCEDIMIENTO: lee una a una las instrucciones del arreglo, y las ejecuta según las señales de control y posteriormente las escribe en los archivos de salida
+	//===================================================================
+*/
 
 	char* inmediato;int inmediate;
 	//REGISTROS
@@ -112,8 +119,8 @@ void procesar(dato* arregloinstrucciones, int lineas, int valores[32],char senal
 			}
 		}
 		//INSTRUCCIONES LW Y SW
-		else if(strcmp("lw",arregloinstrucciones[a].id)==0 || strcmp("sw",arregloinstrucciones[a].id)==0){
-			if(senal[3]!='0'){
+			else if(strcmp("lw",arregloinstrucciones[a].id)==0 ){
+			if(senal[3]!='0' && senal[8]!='0'){
 				fprintf(salida, "%s %s %s(%s) ,", arregloinstrucciones[a].id,arregloinstrucciones[a].r1,arregloinstrucciones[a].r2,arregloinstrucciones[a].r3);
 				for(int i=0; i < 32; i++){
 					if(strcmp(arregloinstrucciones[a].r1,registros[i])==0){
@@ -131,12 +138,40 @@ void procesar(dato* arregloinstrucciones, int lineas, int valores[32],char senal
 				}
 				direccion=dir/4;
 				for(int i=0 ; i < 1024; i++){
-					if(strcmp("lw",arregloinstrucciones[a].id)==0 ){
 						valores[dato1]=memoria[direccion];
+					
+
+				}
+				for(int i=0; i < 32; i++){
+					fprintf(salida, "%d,", valores[i]);
+				}
+					fprintf(salida, "\n" );
+					fprintf(salida2, "%s %s %s(%s)\n",arregloinstrucciones[a].id,arregloinstrucciones[a].r1,arregloinstrucciones[a].r2,arregloinstrucciones[a].r3 );
 					}
-					else{
+		}
+
+		else if(strcmp("sw",arregloinstrucciones[a].id)==0){
+			if(senal[6]!='0'){
+				fprintf(salida, "%s %s %s(%s) ,", arregloinstrucciones[a].id,arregloinstrucciones[a].r1,arregloinstrucciones[a].r2,arregloinstrucciones[a].r3);
+				for(int i=0; i < 32; i++){
+					if(strcmp(arregloinstrucciones[a].r1,registros[i])==0){
+					dato1=i;
+					
+				}
+				else if(strcmp(arregloinstrucciones[a].r3,registros[i])==0){
+					dato3=i;
+						}
+					}
+				int dir=atoi(arregloinstrucciones[a].r2);
+				if(dir%4!=0){
+					printf("%s\n","la direccion de memoria no es divisible de 4" );
+					exit(1);
+				}
+				direccion=dir/4;
+				for(int i=0 ; i < 1024; i++){
+
 						memoria[direccion]=valores[dato1];
-					}
+					
 				}
 				for(int i=0; i < 32; i++){
 					fprintf(salida, "%d,", valores[i]);
@@ -201,7 +236,6 @@ char* leerarchivo2(char* entrada2, char senal[10]){
 		}
 	fclose(archivo);
 	archivo=fopen(entrada2,"r");
-	char (*instrucciones[10])[8][4];
 
 		while(!feof(archivo) && i<cont){
 		//SE SEPARA LA LINEA POR UN ESPACIO Y SE CONSERVA SOLO LA SEÑAL
@@ -279,7 +313,7 @@ void leerarchivo(char* entrada, char senal[10],FILE* salida,FILE*salida2){
 }
 procesar(arregloinstrucciones,lineas,valores,senal,salida,salida2);
 free(arregloinstrucciones);
-	fclose(archivo);
+fclose(archivo);
 }
 void cabecera(FILE* salida){
 	char*registros[32]={"$zero","$at","$v0","$v1","$a0",
