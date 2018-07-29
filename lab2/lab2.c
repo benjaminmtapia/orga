@@ -1,7 +1,10 @@
 #include "funciones.h"
 
 int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L){
-
+	//funcion que ejecuta una instruccion de mips e inserta la traza en una lista, retornando a su vez el indice en que quedo
+	//luego de ejecutar cada instruccion. Esta funcion puede ir ejecutando el valor de los registros
+	//entrada: codigo mips en arreglo de estructuras, arreglo de enteros con los valores de registros, cantidad de lineas del codigo, indice a buscar, lista a insertar
+	//salida: indice en el que se desarrollo la ultima instruccion y va encolando la traza a la lista L
 	//printf("%d\n",lineas );
 	char* inmediato;int inmediate;
 	//REGISTROS
@@ -32,11 +35,11 @@ int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L
 				for(int i=0; i < lineas; i++){
 
 					if(strcmp(inmediato,arregloinstrucciones[i].id)==0){
-						indice=i;
+						posicion=i;
 						break;
 					}
 				}
-				a=indice;
+				a=posicion;
 			
 		}
 		//INSTRUCCIONES ADD,SUB,MUL,DIV
@@ -132,7 +135,6 @@ int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L
 		else if(strcmp("sw",arregloinstrucciones[a].id)==0){
 			arregloinstrucciones[a].verificador=1;
 
-			//printf("%d\n",arregloinstrucciones[a].verificador );
 				for(int i=0; i < 32; i++){
 					if(strcmp(arregloinstrucciones[a].rd,registros[i])==0){
 					dato1=i;
@@ -173,7 +175,6 @@ int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L
 					if(strcmp(inmediato,arregloinstrucciones[i].id)==0){
 						arregloinstrucciones[a].verificador=1;
 
-		//	printf("%d\n",arregloinstrucciones[a].verificador );
 						posicion=i;
 						break;
 						}
@@ -182,7 +183,6 @@ int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L
 				}
 				else{
 					arregloinstrucciones[a].verificador=0;
-		//	printf("%d\n",arregloinstrucciones[a].verificador );
 					a++;
 				}
 		}
@@ -194,208 +194,66 @@ int ejecutar(dato* arregloinstrucciones,int* valores, int lineas, int a, lista*L
 //printf("%s %s %s\n",arregloinstrucciones[a].id,arregloinstrucciones[a].rd,arregloinstrucciones[a].rs );
 return a;
 }
-int lineas (char*entrada){
-		FILE*archivo;
-		char buffer[30];
-		archivo=fopen("M1.asm","r");
-		int aux=0;
-		while(!feof(archivo)){
-			fgets(buffer,1000,archivo);
-			aux++;
+
+char*** arreglo_codigo(dato*arregloinstrucciones, int lineas){
+	//a partir de un arreglo con las instrucciones mips, realiza un arreglo triple puntero
+	//donde cada elemento es una instruccion mips separada por instruccion, y sus 3 registros
+	//representacion = [ [instruccion,registro1,registro2,registro3] , [instruccion,r1,r2,r3], ...]
+	//entrada: arreglo de instrucciones mips y cantidad de lineas
+	//salida: arreglo de strings con el codigo
+		char*** codigo;
+		codigo=(char***)malloc(sizeof(char**)*lineas);
+		for (int i = 0; i < lineas; ++i){
+			codigo[i]=(char**)malloc(sizeof(char*)*5);
+			for(int j=0; j < 5; j++){
+				codigo[i][j]=(char*)malloc(sizeof(char));
+			}
 		}
-		return aux;
+		for (int i = 0; i < lineas; ++i)
+		{
+			strcpy(codigo[i][0],arregloinstrucciones[i].id);
+			strcpy(codigo[i][1],arregloinstrucciones[i].rd);
+			strcpy(codigo[i][2],arregloinstrucciones[i].rs);
+			strcpy(codigo[i][3],arregloinstrucciones[i].rt);
+		}
+		return codigo;
 }
-dato* leerarchivo(char* entrada, dato* arregloinstrucciones){
-		FILE* archivo;
-		lista*L;
-		L=crearLista();
-		dato* nodo;
-		nodo=(dato*)malloc(sizeof(dato));
 
-		archivo=fopen(entrada,"r");
-		char buffer[1000];
-		int lineas=0;
-
-		if(archivo==NULL){
-		printf("%s\n","Falló apertura de archivo de programa" );
-		exit(1);
+char*** arreglo_traza(lista*L, int largo, int lineas){
+	//convierte la traza del codigo (en caso de haber saltos) en un arreglo char*** al igual que la funcion arreglo_codigo
+	//entrada: una lista enlazada con la traza, el largo de la lista enlazada y las lineas del codigo original
+	//salida: arreglo de strings con las instrucciones que se ejecutan en el codigo mips
+	char*** traza;
+		traza=(char***)malloc(sizeof(char**)*lineas);
+		for (int i = 0; i < lineas; ++i)
+		{
+			traza[i]=(char**)malloc(sizeof(char*)*5);
+			for(int j=0; j < 5; j++){
+				traza[i][j]=(char*)malloc(sizeof(char));
+			}
 		}
-		while(!feof(archivo)){
-		fgets(buffer, 1000, archivo);
-		lineas++;
-		}	
-		fclose(archivo);
-
-		int aux=0;
-		arregloinstrucciones=(dato*)malloc(sizeof(dato)*lineas);
-		archivo=fopen(entrada,"r");
-		char buffer2[1000];
-
-		char*valor;char*valor2;char*valor3;char*valor4;
-
-		while(!feof(archivo) && aux<lineas){
-		fgets(buffer, 1000, archivo);
-		valor 	= strtok(buffer, " ");
-		if(strcmp(valor,"add")==0 ||strcmp(valor,"sub")==0 ||strcmp(valor,"mul")==0 ||strcmp(valor,"div")==0 ||
-		strcmp(valor,"addi")==0 ||strcmp(valor,"subi")==0 ||strcmp(valor,"beq")==0  ){
-				strcpy(arregloinstrucciones[aux].id,valor);
-				valor2 	= strtok(NULL,", ");
-				strcpy(arregloinstrucciones[aux].rd,valor2);
-				valor3 	= strtok(NULL,", ");
-				strcpy(arregloinstrucciones[aux].rs,valor3);
-				valor4	= strtok(NULL," \n");
-				strcpy(arregloinstrucciones[aux].rt,valor4);
-
-				//nodo=crearnodo(valor,valor2,valor3,valor4);
-				//encolar(L,nodo);
+		//int largo=largolista(L);
+		for (int i = 0; i < largo ; i++){
+			dato* elemento;
+			elemento=buscar(L,i);
+			strcpy(traza[i][0],elemento->id);
+			strcpy(traza[i][1],elemento->rd);
+			strcpy(traza[i][2],elemento->rs);
+			strcpy(traza[i][3],elemento->rt);
 
 		}
-		else if(strcmp(valor,"j")==0){
-				strcpy(arregloinstrucciones[aux].id,valor);
-				valor2 	= strtok(NULL," ");
-				strcpy(arregloinstrucciones[aux].rd,valor2);
-				valor3="";
-				valor4="";
-				strcpy(arregloinstrucciones[aux].rs,valor3);
-				strcpy(arregloinstrucciones[aux].rt,valor4);
-		}
-		
-		else if(strcmp(valor,"lw")==0 || strcmp(valor,"sw")==0){
-				strcpy(arregloinstrucciones[aux].id,valor);
-				valor2 	= strtok(NULL,", ");
-				strcpy(arregloinstrucciones[aux].rd,valor2);
-				valor3 	= strtok(NULL," (");
-				strcpy(arregloinstrucciones[aux].rs,valor3);
-				valor4	= strtok(NULL,")");
-				strcpy(arregloinstrucciones[aux].rt,valor4);
-		}
-		else{
-			valor=strtok(valor,":\n");
-			strcpy(arregloinstrucciones[aux].id,valor);
-			valor2="";
-			valor3="";
-			valor4="";
-			strcpy(arregloinstrucciones[aux].rd,valor2);
-			strcpy(arregloinstrucciones[aux].rs,valor3);
-			strcpy(arregloinstrucciones[aux].rt,valor4);
-		}
-	aux++;
+	return traza;
 }
-fclose(archivo);
-return arregloinstrucciones;
-}
+void salida1(FILE*salida,FILE* salida2,dato* arregloinstrucciones, int* arreglo_registros, int lineas){
+	//ejecucion de pipeline y hazards de datos y control, se comentan los procesos a lo largo de la funcion
+	//entrada: archivos de salida, codigo mips en arreglo de estructuras, arreglo con los valores de los 32 registros, cantidad de lineas del codigo
+	//salida: no retorna un valor como funcion, pero escribe en los archivos de salida el pipeline y los h
+	//	salida=fopen("S1.csv","w");
+	//	salida2=fopen("S2.csv","w");
 
-int* leerarchivo2(char* entrada2, int* arreglo_registros){
-	FILE* archivo;
-	archivo=fopen(entrada2,"r");
-	char buffer[1000];
-	int lineas=0;
-
-		if(archivo==NULL){
-		printf("%s\n","Falló apertura de archivo de programa" );
-		exit(1);
-		}
-		while(!feof(archivo)){
-		fgets(buffer, 1000, archivo);
-		lineas++;
-		}	
-		fclose(archivo);
-	
-	arreglo_registros=(int*)malloc(sizeof(int)*32);
-
-	for (int i = 0; i < 32; ++i){
-		arreglo_registros[i]=0; 
-	}
-	archivo=fopen(entrada2,"r");
-	int aux; aux=0;
-
-	char*valor;char*valor2;char*valor3;char*valor4;
-	int valor_registro;
-
-		while(!feof(archivo) && aux<lineas){
-		fgets(buffer, 1000, archivo);
-		valor 	= strtok(buffer, " ");
-		valor2	= strtok(NULL,"");
-		valor_registro=atoi(valor2);
-		arreglo_registros[aux]=valor_registro;
-		aux++;
-		}
-	return arreglo_registros;
-}
-
-
-char* unir_instruccion(char*id,char*rd,char*rs,char*rt){
-	char*aux;
-	aux=(char*)malloc(sizeof(char));
-	strcpy(aux,id);
-	strcat(aux," ");
-	strcat(aux,rd);
-	strcat(aux,", ");
-	strcat(aux,rs);
-	strcat(aux,", ");
-	strcat(aux,rt);
-	return aux;
-}
-
-
-void change_buffer(buffer* IFID, buffer* IDEX, buffer* EXMEM, buffer* MEMWB, char* id, char*rd, char*rs, char* rt){
-	strcpy(MEMWB->rd,EXMEM->rd);
-	strcpy(MEMWB->rs,EXMEM->rs);
-	strcpy(MEMWB->rt,EXMEM->rt);
-	strcpy(MEMWB->id,EXMEM->id);
-	strcpy(EXMEM->id,IDEX->id);
-	strcpy(EXMEM->rd,IDEX->rd);
-	strcpy(EXMEM->rs,IDEX->rs);
-	strcpy(EXMEM->rt,IDEX->rt);
-	strcpy(IDEX->id,IFID->id);
-	strcpy(IDEX->rd,IFID->rd);
-	strcpy(IDEX->rs,IFID->rs);
-	strcpy(IDEX->rt,IFID->rt);
-	strcpy(IFID->rd,rd);
-	strcpy(IFID->rs,rs);
-	strcpy(IFID->rt,rt);
-	strcpy(IFID->id,id);
-}
-
-int detectar_hazard(buffer* EXMEM,buffer*IDEX,buffer*MEMWB){
-	if(strcmp(EXMEM->rd,IDEX->rs)==0){
-		return 1;
-	}
-	else if(strcmp(EXMEM->rd,IDEX->rt)==0){
-		return 1;
-	}
-	else if(strcmp(MEMWB->rd,IDEX->rs)==0){
-		return 1;
-	}
-	else if(strcmp(MEMWB->rd,IDEX->rt)==0){
-		return 1;
-	}
-	else{
-		return 0;
-	}
-}
-void agregarNOP(pipeline* pipe){
-	strcpy(pipe->linea[4],pipe->linea[3]);
-	strcpy(pipe->linea[3],pipe->linea[2]);
-	strcpy(pipe->linea[2],pipe->linea[1]);
-	strcpy(pipe->linea[1],pipe->linea[0]);
-	strcpy(pipe->linea[0],"NOP");
-}
-void escribir_pipeline(pipeline* pipe,char* aux){
-	strcpy(pipe->linea[4],pipe->linea[3]);
-	strcpy(pipe->linea[3],pipe->linea[2]);
-	strcpy(pipe->linea[2],pipe->linea[1]);
-	strcpy(pipe->linea[1],pipe->linea[0]);
-	strcpy(pipe->linea[0],aux);
-}
-void mover_final(char** linea, char* aux){
-	strcpy(linea[4],linea[3]);
-	strcpy(linea[3],linea[4]);
-	strcpy(linea[2],linea[1]);
-	strcpy(linea[1],linea[0]);
-	strcpy(linea[0],aux);
-}
-void salida1(FILE*salida,dato* arregloinstrucciones, int* arreglo_registros, int lineas){
+	//se imprimen las cabeceras de los archivos de salida
+		fprintf(salida,"%s;%s;%s;%s;%s;%s\n","CICLO","IF","ID","EX","MEM","WB");
+		fprintf(salida2,"%s;%s;%s\n","CICLO","Datos","Control");
 		//lista enlazada para rescatar la traza
 		lista* L;
 		L=crearLista();
@@ -413,173 +271,220 @@ void salida1(FILE*salida,dato* arregloinstrucciones, int* arreglo_registros, int
 			nodo=crearnodo(arregloinstrucciones[i].id,arregloinstrucciones[i].rd,arregloinstrucciones[i].rs,arregloinstrucciones[i].rt,arregloinstrucciones[i].verificador);
 			encolar(L,nodo);
 			}
-			//dejar la traza sin el NEXT
-		eliminaretiquetas(L);
-		//INICIO DE CODIGO [ [instruccion, rd, rs, rt], [], [] ...]
-		char*** codigo;
-		codigo=(char***)malloc(sizeof(char**)*lineas);
-		for (int i = 0; i < lineas; ++i){
-			codigo[i]=(char**)malloc(sizeof(char*)*5);
-			for(int j=0; j < 5; j++){
-				codigo[i][j]=(char*)malloc(sizeof(char));
-			}
-		}
-		for (int i = 0; i < lineas; ++i)
-		{
-			strcpy(codigo[i][0],arregloinstrucciones[i].id);
-			strcpy(codigo[i][1],arregloinstrucciones[i].rd);
-			strcpy(codigo[i][2],arregloinstrucciones[i].rs);
-			strcpy(codigo[i][3],arregloinstrucciones[i].rt);
-		}
-		//INICIO DE TRAZA [ [instruccion, rd, rs, rt], [], [] ...]
-		char*** traza;
-		traza=(char***)malloc(sizeof(char**)*lineas);
-		for (int i = 0; i < lineas; ++i)
-		{
-			traza[i]=(char**)malloc(sizeof(char*)*5);
-			for(int j=0; j < 5; j++){
-				traza[i][j]=(char*)malloc(sizeof(char));
-			}
-		}
-		int largo=largolista(L);
-		for (int i = 0; i < largo ; i++){
-			dato* elemento;
-			elemento=buscar(L,i);
-			strcpy(traza[i][0],elemento->id);
-			strcpy(traza[i][1],elemento->rd);
-			strcpy(traza[i][2],elemento->rs);
-			strcpy(traza[i][3],elemento->rt);
 
-		}
+		//INICIO DE TRAZA Y CODIGO*** [ [instruccion, rd, rs, rt], [], [] ...]
+			char*** codigo;
+			codigo=arreglo_codigo(arregloinstrucciones,lineas);
+			char*** traza;
+			int largo=largolista(L);
+			traza=arreglo_traza(L,largo,lineas);
 
 		//TRABAJO DE PIPELINE
-		//primera linea:
-		char* instruccion_aux;		
-		instruccion_aux=unir_instruccion(traza[0][0],traza[0][1],traza[0][2],traza[0][3]);
-		char** linea_aux;
-		linea_aux = (char**)malloc(sizeof(char*)*5);
-		for (int i = 0; i < 5; ++i)
-		{
-			linea_aux[i]=(char*)malloc(sizeof(char));
-		}
-		strcpy(linea_aux[0],instruccion_aux);
-		strcpy(linea_aux[1],"-");
-		strcpy(linea_aux[2],"-");
-		strcpy(linea_aux[3],"-");
-		strcpy(linea_aux[4],"-");
-		pipeline* nodo_pipeline;
-		nodo_pipeline=crearpipeline(linea_aux);
-		encolar_pipe(pipe,nodo_pipeline);
-		imprimirpipe(pipe);
+		//primera linea: debido a que se necesita tener al menos un elemento cargado en el pipeline en el primer ciclo
+			char* instruccion_aux;		
+			instruccion_aux=unir_instruccion(traza[0][0],traza[0][1],traza[0][2],traza[0][3]);
+			char** linea_aux;
+			linea_aux = (char**)malloc(sizeof(char*)*5);
+			for (int i = 0; i < 5; ++i){
+			linea_aux[i]=(char*)malloc(sizeof(char));}
 
-		char* ins_completa;
-		ins_completa=(char*)malloc(sizeof(char));
-		//resto del pipeline:
-
-		for (int i = 1; i < largo; i++){
-		change_buffer(IFID,IDEX,EXMEM,MEMWB,traza[i][0],traza[i][1],traza[i][2],traza[i][3]);
-		ins_completa=unir_instruccion(IDEX->id,IDEX->rd,IDEX->rs,IDEX->rt);
-		//printf("%s %s %s %s || %s %s %s %s\n",traza[i][0],traza[i][1],traza[i][2],traza[i][3],codigo[i][0],codigo[i][1],codigo[i][2],codigo[i][3] );
-		if(strcmp(IDEX->id,"add")==0 || strcmp(IDEX->id,"sub")==0 || strcmp(IDEX->id,"mul")==0 
-		   || strcmp(IDEX->id,"div")==0|| strcmp(IDEX->id,"addi")==0 || strcmp(IDEX->id,"subi")==0){	
-			
-				int hazard;
-				hazard=detectar_hazard(EXMEM,IDEX,MEMWB);
-				if(hazard==1){
-
-				escribir_pipeline(nodo_pipeline,ins_completa);
-				agregarNOP(nodo_pipeline);
-				i=i-1;
-				encolar_pipe(pipe,nodo_pipeline);
-				}
-
-				else{
-
-				escribir_pipeline(nodo_pipeline,ins_completa);
-				encolar_pipe(pipe,nodo_pipeline);
-		
-				
-				}
-			}
-
-		else if(strcmp(IDEX->id,"lw")==0 || strcmp(IDEX->id,"sw")==0){
-
-			int hazard;
-			hazard=detectar_hazard(EXMEM,IDEX,MEMWB);
-				if(hazard==1){
-				i=i-1;
-				}
-				else{
-				i=i-1;
-				}
-		}
-
-		else if(strcmp(IDEX->id,"beq")==0){
-			
-			if(strcmp(traza[i+1][0],codigo[i][0])==0 && strcmp(traza[i+1][1],codigo[i][1])==0
-			&& strcmp(traza[i+1][2],codigo[i][2])==0 && strcmp(traza[i+1][3],codigo[i][3])==0){
-				
-			//printf("%s\n","no entra al beq" );
-			int hazard;
-			hazard=detectar_hazard(EXMEM,IDEX,MEMWB);
-				if(hazard==1){
-				//agregarNOP(nodo_pipeline);
-				escribir_pipeline(nodo_pipeline,ins_completa);
-				agregarNOP(nodo_pipeline);
-				encolar_pipe(pipe,nodo_pipeline);
-			//	printf("%s %s %s %s\n",nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3]);
-				
-				}
-				else{
-					//agregarNOP(nodo_pipeline);
-					escribir_pipeline(nodo_pipeline,ins_completa);
-					agregarNOP(nodo_pipeline);
-					encolar_pipe(pipe,nodo_pipeline);
-				}
-				i=i-1;
-				}
-
-			else{
-				//printf("%s\n","si entra al beq");
-				int hazard;
-			hazard=detectar_hazard(EXMEM,IDEX,MEMWB);
-			if(hazard==1){
-				//agregarNOP(nodo_pipeline);
-				escribir_pipeline(nodo_pipeline,ins_completa);
-				agregarNOP(nodo_pipeline);
-				agregarNOP(nodo_pipeline);
-				encolar_pipe(pipe,nodo_pipeline);
-				//agregarNOP(nodo_pipeline);
-			
-			}
-			else{
-				//agregarNOP(nodo_pipeline);
-				escribir_pipeline(nodo_pipeline,ins_completa);
-				agregarNOP(nodo_pipeline);
-				encolar_pipe(pipe,nodo_pipeline);
-				
-			}
-			i=i-1;
-			}
-		}
-		else if(strcmp(IDEX->id,"j")==0){
-			//agregarNOP(nodo_pipeline);
-			escribir_pipeline(nodo_pipeline,ins_completa);
-			agregarNOP(nodo_pipeline);
+			strcpy(linea_aux[0],instruccion_aux);
+			strcpy(linea_aux[1],"-");
+			strcpy(linea_aux[2],"-");
+			strcpy(linea_aux[3],"-");
+			strcpy(linea_aux[4],"-");
+		//se encola la linea en el pipeline y se escribe en el archivo
+			pipeline* nodo_pipeline;
+			nodo_pipeline=crearpipeline(linea_aux);
+			fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",1,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+			fprintf(salida2, "%d;%s ; %s\n",1,"-","-" );
 			encolar_pipe(pipe,nodo_pipeline);
-			i=i-1;
-		}
-	//	printf("%s %s %s %s\n",traza[i][0],traza[i][1],traza[i][2],traza[i][3]);
-	//	printf("%s || %s || %s || %s || %s\n",nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
-		encolar_pipe(pipe,nodo_pipeline);
-	}
+			char* ins_completa;
+			ins_completa=(char*)malloc(sizeof(char));
+		//resto del pipeline:
+			int ciclo;
+			int hazard;
+			ciclo=2;
+		for (int i = 1; i < largo; i++){
+			//se hace push a los buffers, se toma la instruccion actual de la traza, y se verifican los hazards
+			change_buffer(IFID,IDEX,EXMEM,MEMWB,traza[i][0],traza[i][1],traza[i][2],traza[i][3]);
+			ins_completa=unir_instruccion(traza[i][0],traza[i][1],traza[i][2],traza[i][3]);
+			hazard=detectar_hazard(EXMEM,IDEX,MEMWB);
+			
 
+			if(strcmp(IDEX->id,"add")==0 || strcmp(IDEX->id,"sub")==0 || strcmp(IDEX->id,"mul")==0 || 
+				strcmp(IDEX->id,"div")==0 || strcmp(IDEX->id,"sw")==0 || strcmp(IDEX->id,"addi")==0 || 
+				strcmp(IDEX->id,"subi")==0){
+
+				if(hazard==1){
+					//si es que hay hazards:
+				//	agregarNOP(nodo_pipeline);
+					escribir_pipeline(nodo_pipeline,ins_completa);
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+					fprintf(salida2, "%d;%s ; %s\n",ciclo,IDEX->rd,"-" );
+
+					//i=i-1;
+					}
+				else{
+
+					escribir_pipeline(nodo_pipeline,ins_completa);
+					fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","-" );
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+					//i=i-1;
+					}
+					ciclo++;
+				//escribir_pipeline(nodo_pipeline,ins_completa);
+				//fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+				
+				}
+			else if(strcmp(IDEX->id,"lw")==0){
+				
+					if(hazard==1){
+					fprintf(salida2, "%d;%s ; %s\n",ciclo,IDEX->rd,"-" );
+					agregarNOP(nodo_pipeline);
+					escribir_pipeline(nodo_pipeline,ins_completa);
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+					i=i-1;
+					}
+					else{
+					fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","-" );
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+					//i=i-1;
+					}
+					ciclo++;
+				
+			}
+			//INSTRUCCION BEQ
+			else if(strcmp(IDEX->id,"beq")==0){
+				pipeline* nodo_aux;
+				nodo_aux = nodo_pipeline;
+				char* comparador;
+				comparador = (char*) malloc(sizeof(char));
+				comparador=strtok(codigo[i-1][3]," ");
+				//se verifica si hubo salto o no
+				if(strcmp(codigo[i-1][3],traza[i][0])==0 ){
+					//en caso de que salte:
+
+					char* auxiliar;char*auxiliar2;char*auxiliar3;
+
+					auxiliar = (char*)malloc(sizeof(char));
+					auxiliar2 = (char*)malloc(sizeof(char));
+					auxiliar3 = (char*)malloc(sizeof(char));
+					//cargamos la instrucciones que siguen del codigo (bajo el beq)
+					auxiliar=unir_instruccion(codigo[i][0],codigo[i][1],codigo[i][2],codigo[i][3]);	
+					auxiliar2=unir_instruccion(traza[i+1][0],traza[i+1][1],traza[i+1][2],traza[i+1][3]);
+
+					//cargo instruccion que viene debajo de beq
+					printf("%s %s %s %s %s \n",nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4] );
+					escribir_pipeline(nodo_aux,auxiliar);
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+					//cargo el nop
+					printf("%s %s %s %s %s \n",nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4] );
+					
+					ciclo++;
+					corregirNodo(nodo_aux,auxiliar);
+					
+					//cargo despues de la etiqueta
+					escribir_pipeline(nodo_aux,auxiliar2);
+					printf("ABAJO ETIQUETA-> %s %s %s %s %s \n",nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4] );
+					fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+					fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","Hazard salto" );
+					ciclo++;
+					strcpy(nodo_pipeline->linea[1],"NOP");
+					printf("%s %s %s %s \n",nodo_pipeline->linea[0] ,nodo_pipeline->linea[1] ,nodo_pipeline->linea[2] ,nodo_pipeline->linea[3] );
+					i=i+1;
+				}
+
+					else{
+						//EN CASO DE QUE NO SALTE
+						//se cargan una bajo el beq y dos bajo la etiqueta
+						nodo_aux=nodo_pipeline;
+						char* auxiliar;char*auxiliar2;char*auxiliar3;char* etiqueta;
+						int indiceEtiqueta;
+						auxiliar = (char*)malloc(sizeof(char));
+						auxiliar2 = (char*)malloc(sizeof(char));
+						auxiliar3 = (char*)malloc(sizeof(char));
+						
+						indiceEtiqueta=buscador(codigo,largo);
+						//instrucciones bajo la etiqueta
+						for (int i = 0; i < largo; ++i){
+							if(indiceEtiqueta+1 <largo){
+								auxiliar=unir_instruccion(codigo[indiceEtiqueta+1][0],codigo[indiceEtiqueta+1][1],codigo[indiceEtiqueta+1][2],codigo[indiceEtiqueta+1][3]);								
+							}
+							if(indiceEtiqueta+2 < largo){
+								auxiliar2=unir_instruccion(codigo[indiceEtiqueta+2][0],codigo[indiceEtiqueta+2][1],codigo[indiceEtiqueta+2][2],codigo[indiceEtiqueta+2][3]);								
+							}
+							else{
+								//cargo instruccion 1 no mas
+								auxiliar2=unir_instruccion(codigo[indiceEtiqueta+1][0],codigo[indiceEtiqueta+1][1],codigo[indiceEtiqueta+1][2],codigo[indiceEtiqueta+1][3]);								
+							}
+						}
+						auxiliar3=unir_instruccion(codigo[i][0],codigo[i][1],codigo[i][2],codigo[i][3]);
+						fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","Hazard BEQ" );
+						//carga instruccion bajo beq
+						escribir_pipeline(nodo_aux,auxiliar3);
+					//	printf("BAJO BEQ %s %s %s %s %s\n",nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4] );
+						fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+						ciclo++;
+						//se converite a NOP la instruccion anterior y se carga una bajo la etiqueta
+						corregirNodo(nodo_aux,auxiliar3);
+						escribir_pipeline(nodo_aux,auxiliar);
+
+						fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+						fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","Hazard prediccion" );
+						ciclo++;
+						//se carga otra instruccion bajo la etiqueta
+						escribir_pipeline(nodo_aux,auxiliar2);
+						fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+						fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","Hazard prediccion" );
+						ciclo++;
+						fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","-" );
+						//convertimos las dos de la etiqueta en NOP y cargamos la instruccion bajo el beq
+						corregirNodo(nodo_aux,auxiliar);
+						corregirNodo(nodo_aux,auxiliar2);
+						escribir_pipeline(nodo_aux,auxiliar3);
+						fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_aux->linea[0],nodo_aux->linea[1],nodo_aux->linea[2],nodo_aux->linea[3],nodo_aux->linea[4]);
+						
+						ciclo++;
+						nodo_pipeline=nodo_aux;
+				} 
+			}
+
+			else if(strcmp(IDEX->id,"j")==0){
+						//se buscan las instrucciones bajo la etiqueta y bajo el codigo
+						char* auxiliar;char*auxiliar2;char*auxiliar3;char* etiqueta;
+						int indiceEtiqueta;
+						auxiliar = (char*)malloc(sizeof(char));
+						auxiliar2 = (char*)malloc(sizeof(char));
+						auxiliar3 = (char*)malloc(sizeof(char));
+						indiceEtiqueta=buscador(codigo,largo);
+						auxiliar = unir_instruccion(codigo[i][0],codigo[i][1],codigo[i][2],codigo[i][3]);
+						//cargo la que esta abajo del codigo
+						escribir_pipeline(nodo_pipeline,auxiliar);
+						fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+						ciclo++;
+						corregirNodo(nodo_pipeline,auxiliar);
+						i++;
+			}
+	
+			else{
+				fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","-" );
+				escribir_pipeline(nodo_pipeline,ins_completa);
+				fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+				ciclo++;
+			}
+			//fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,nodo_pipeline->linea[0],nodo_pipeline->linea[1],nodo_pipeline->linea[2],nodo_pipeline->linea[3],nodo_pipeline->linea[4]);
+			//ciclo++;
+
+	}
+	//para la ultima instruccion, se corre la linea
 	for(int j=0; j<4;j++){
+		fprintf(salida2, "%d;%s ; %s\n",ciclo,"-","-" );
 		char** ultimo;
 		ultimo=pipe->fin->linea;
-		//printf("%s\n", ultimo[0]);
 		mover_final(ultimo,"-");
-		//printf("%s || %s || %s || %s || %s\n",ultimo[0],ultimo[1],ultimo[2],ultimo[3],ultimo[4] );
+		fprintf(salida,"%d; %s ; %s ; %s ; %s ; %s\n",ciclo,ultimo[0],ultimo[1],ultimo[2],ultimo[3],ultimo[4] );
+		ciclo++;
 	}
-	imprimirpipe(pipe);
+
 }
