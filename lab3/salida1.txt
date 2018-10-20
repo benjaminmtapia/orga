@@ -1,0 +1,210 @@
+-----------
+Grado de asociatividad:  1
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  1
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  1
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  2
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  2
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  2
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  4
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  4
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  4
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  8
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  8
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  8
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  16
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  16
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  16
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  32
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  32
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  32
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  64
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  64
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  64
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  128
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  128
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  128
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  256
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  256
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  256
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
+-----------
+Grado de asociatividad:  512
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  FIFO
+-----------
+Grado de asociatividad:  512
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  MRU
+-----------
+Grado de asociatividad:  512
+Numero de Hits:  4
+Numero de Miss: 8
+Tasa de Hits:  0.333333
+Tasa de Miss: 0.666667
+Tecnica de Reemplazo:  LRU
